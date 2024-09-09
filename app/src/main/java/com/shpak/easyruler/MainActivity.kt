@@ -21,19 +21,43 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
+import androidx.core.graphics.green
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class MainActivity : ComponentActivity() {
+
+    private var lastX = 0f
+    private var lastY = 0f
+    private var lastZ = 0f
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
 
-        // extractAllEmbeddedJpegs(assets.open("test.jpg"), "$filesDir")
+        val depthMapNear = 0.578811
+        val depthMapFar = 1.707531
 
-        val depthBitmap = BitmapFactory.decodeStream(assets.open("depth.jpg"))
+        val principalPointX = 1523.186035
+        val principalPointY = 2019.192139
+
+        val focalLength = 2904.9021
+
+        fun getX(coordX: Float, depth: Float): Float {
+            return ((coordX - principalPointX) * depth / focalLength).toFloat()
+        }
+
+        fun getY(coordY: Float, depth: Float): Float {
+            return ((coordY - principalPointY) * depth / focalLength).toFloat()
+        }
+
+        extractAllEmbeddedJpegs(assets.open("test_50_cm.jpg"), "$filesDir")
+
+        val depthBitmap = BitmapFactory.decodeStream(assets.open("test_50_cm_depth.jpg"))
 
         setContent {
             var viewableBitmap by remember { mutableStateOf(depthBitmap) }
@@ -57,20 +81,30 @@ class MainActivity : ComponentActivity() {
                                 val tempBmp = depthBitmap.copy(depthBitmap.config, true)
 
                                 val pointWidth = 10
-                                for (x in imageX - pointWidth .. imageX + pointWidth) {
-                                    for (y in imageY - pointWidth .. imageY + pointWidth) {
+                                for (x in imageX - pointWidth..imageX + pointWidth) {
+                                    for (y in imageY - pointWidth..imageY + pointWidth) {
                                         tempBmp.setPixel(x, y, Color.RED)
                                     }
                                 }
 
                                 viewableBitmap = tempBmp
 
-                                for (i in 0..24 step 8) {
-                                    Log.d(
-                                        "TAG123",
-                                        "Pixel[$imageX, $imageY]: ${pixel shr i and 0xFF}"
-                                    )
-                                }
+                                val pixelDepthMeters =
+                                    depthMapNear + (pixel.green / 255f) * (depthMapFar - depthMapNear)
+
+                                val x = getX(imageX.toFloat(), pixelDepthMeters.toFloat())
+                                val y = getY(imageY.toFloat(), pixelDepthMeters.toFloat())
+                                val z = pixelDepthMeters.toFloat()
+
+                                val distance = sqrt(
+                                    (x - lastX).pow(2f) + (y - lastY).pow(2f) + (z - lastZ).pow(2f)
+                                )
+
+                                Log.d("TAG123", "Dist: $distance")
+
+                                lastX = x
+                                lastY = y
+                                lastZ = z
                             }
                         }
                         .onGloballyPositioned { layoutCoordinates ->
