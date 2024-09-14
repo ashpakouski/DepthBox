@@ -22,6 +22,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.core.graphics.green
+import com.drew.imaging.ImageMetadataReader
+import com.drew.metadata.xmp.XmpDirectory
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -38,6 +40,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+
+        listXmpDirectories()
 
         val depthMapNear = 0.578811
         val depthMapFar = 1.707531
@@ -113,6 +117,31 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    private fun listXmpDirectories() {
+        val metadata = ImageMetadataReader.readMetadata(assets.open("test.jpg"))
+
+        metadata.getFirstDirectoryOfType(XmpDirectory::class.java)?.let { xmpDirectory ->
+            val xmpMeta = xmpDirectory.xmpMeta
+            val containerNamespace = "http://ns.google.com/photos/1.0/container/"
+            val directoryPath = "Container:Directory"
+
+            val arraySize = xmpMeta.countArrayItems(containerNamespace, directoryPath)
+
+            for (i in 1..arraySize) {
+                val itemPath = "$directoryPath[$i]/Container:Item"
+                val length = xmpMeta.getPropertyString(containerNamespace, "$itemPath/Item:Length")
+                val mime = xmpMeta.getPropertyString(containerNamespace, "$itemPath/Item:Mime")
+                val semantic =
+                    xmpMeta.getPropertyString(containerNamespace, "$itemPath/Item:Semantic")
+
+                Log.d("TAG123", "Length[$i]: $length")
+                Log.d("TAG123", "Mime[$i]: $mime")
+                Log.d("TAG123", "Semantic[$i]: $semantic")
+            }
+        }
+
     }
 }
 
