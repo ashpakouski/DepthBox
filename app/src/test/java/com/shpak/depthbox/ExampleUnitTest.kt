@@ -1,4 +1,4 @@
-package com.shpak.easyruler
+package com.shpak.depthbox
 
 import org.junit.Test
 

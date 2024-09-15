@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Easy Ruler"
+rootProject.name = "DepthBox"
 include(":app")

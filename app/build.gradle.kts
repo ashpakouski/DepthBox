@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.shpak.easyruler"
+    namespace = "com.shpak.depthbox"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.shpak.easyruler"
+        applicationId = "com.shpak.depthbox"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

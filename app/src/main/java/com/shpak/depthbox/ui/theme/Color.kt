@@ -1,4 +1,4 @@
-package com.shpak.easyruler.ui.theme
+package com.shpak.depthbox.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
