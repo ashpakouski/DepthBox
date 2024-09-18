@@ -28,6 +28,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.sp
+import com.shpak.depthbox.data.repository.GoogleCameraDepthImageRepository
+import com.shpak.depthbox.data.repository.GoogleCameraXmpDirectoryRepository
 import com.shpak.depthbox.data.repository.TestDepthImageRepository
 import kotlinx.coroutines.runBlocking
 
@@ -78,7 +80,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         val testImage = runBlocking {
-            TestDepthImageRepository(applicationContext).getDepthImage(byteArrayOf())
+            GoogleCameraDepthImageRepository(GoogleCameraXmpDirectoryRepository()).getDepthImage(
+                assets.open("test_50_cm.jpg").readBytes()
+            )
         }
 
         val originalBitmap = testImage.original
