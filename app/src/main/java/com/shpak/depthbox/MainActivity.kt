@@ -5,11 +5,9 @@ import android.graphics.RenderEffect
 import android.graphics.RuntimeShader
 import android.graphics.Shader
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposeRenderEffect
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -44,14 +41,14 @@ private val depthMapShader = RuntimeShader(
 
     uniform vec2 viewSize;
     uniform vec2 originalPictureSize;
-    // uniform float depthCoordMultiplier;
-    // uniform float originalCoordMultiplier;
+    uniform vec2 depthMapSize;
 
     uniform vec4 testViewRect;
 
     vec4 main(vec2 fragCoord) {
         float viewAspectRatio = viewSize.x / viewSize.y;
         float pictureAspectRatio = originalPictureSize.x / originalPictureSize.y;
+        vec4 viewPixel = inputTexture.eval(fragCoord);
 
         if (viewAspectRatio < pictureAspectRatio) {
             float originalCoordMultiplier = viewSize.y / originalPictureSize.y;
@@ -60,30 +57,20 @@ private val depthMapShader = RuntimeShader(
             vec2 croppedPixelCoord = vec2(fragCoord.x + xOffset, fragCoord.y) / originalCoordMultiplier;
             vec4 imagePixel = originalPicture.eval(croppedPixelCoord);
             
-            return imagePixel;
+            float depthCoordMultiplier = viewSize.y / depthMapSize.y;
+            float croppedDepthMapWidth = viewSize.y * depthCoordMultiplier;
+            float xDepthOffset = (depthMapSize.x - croppedDepthMapWidth) / 2.0;
+            vec2 croppedDepthPixelCoord = vec2(fragCoord.x + xDepthOffset, fragCoord.y) / depthCoordMultiplier;
+            vec4 depthPixel = depthMap.eval(croppedDepthPixelCoord);
+            
+            if (depthPixel.x < 0.5 || viewPixel.a == 0.0) {
+                return imagePixel;
+            } else {
+                return viewPixel;
+            }
         } else {
         
         }
-        
-        // vec4 depthPixel = depthMap.eval(fragCoord * depthCoordMultiplier);
-        // vec4 originalPixel = originalPicture.eval(fragCoord);
-        // vec4 viewPixel = inputTexture.eval(fragCoord);
-        
-        // return originalPixel;
-
-        // float depth = depthPixel.r;
-
-        // if (fragCoord.x >= testViewRect.x &&
-        //     fragCoord.x <= testViewRect.z &&
-        //     fragCoord.y >= testViewRect.y &&
-        //     fragCoord.y <= testViewRect.w
-        // ) {
-        //     if (depthPixel.r < 0.60 || depthPixel.r > 0.98) {
-        //         return originalPixel;
-        //     } else {
-        //         return viewPixel;
-        //     }
-        // }
 
         return vec4(0.0, 1.0, 1.0, 1.0);
     }
@@ -130,7 +117,6 @@ private fun DepthBox(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color.Red)
             .graphicsLayer {
                 depthMapShader.setFloatUniform(
                     "viewSize",
@@ -144,15 +130,11 @@ private fun DepthBox(
                     originalBitmap.height.toFloat()
                 )
 
-//                depthMapShader.setFloatUniform(
-//                    "depthCoordMultiplier",
-//                    depthBitmap.width / resolution.width.toFloat()
-//                )
-
-//                depthMapShader.setFloatUniform(
-//                    "originalCoordMultiplier",
-//                    originalBitmap.width / resolution.width.toFloat()
-//                )
+                depthMapShader.setFloatUniform(
+                    "depthMapSize",
+                    depthBitmap.width.toFloat(),
+                    depthBitmap.height.toFloat()
+                )
 
                 depthMapShader.setFloatUniform(
                     "testViewRect",
@@ -188,18 +170,8 @@ private fun DepthBox(
                 viewSize = it.size
             }
     ) {
-//        Image(
-//            bitmap = originalBitmap.asImageBitmap(),
-//            contentDescription = null,
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .background(Color.Yellow)
-//                .align(Alignment.Center)
-//
-//        )
-
         Text(
-            text = "23\n55",
+            text = "15\n20",
             color = Color.Yellow,
             fontWeight = FontWeight.Bold,
             fontSize = 191.sp,
