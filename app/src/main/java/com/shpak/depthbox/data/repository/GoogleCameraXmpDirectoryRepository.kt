@@ -25,9 +25,15 @@ class GoogleCameraXmpDirectoryRepository : XmpDirectoryRepository<GoogleCameraXm
             val itemPath = "$DIRECTORY_PATH[$index]/Container:Item"
 
             GoogleCameraXmpDirectoryStruct(
-                length = xmpMeta.getPropertyInteger(CONTAINER_NAMESPACE, "$itemPath/Item:Length"),
-                mimeType = xmpMeta.getPropertyString(CONTAINER_NAMESPACE, "$itemPath/Item:Mime"),
-                semantic = xmpMeta.getPropertyString(CONTAINER_NAMESPACE, "$itemPath/Item:Semantic")
+                length = xmpMeta.getPropertyInteger(
+                    CONTAINER_NAMESPACE, "$itemPath/Item:Length"
+                ) ?: 0,
+                mimeType = xmpMeta.getPropertyString(
+                    CONTAINER_NAMESPACE, "$itemPath/Item:Mime"
+                ) ?: "",
+                semantic = xmpMeta.getPropertyString(
+                    CONTAINER_NAMESPACE, "$itemPath/Item:Semantic"
+                ) ?: ""
             )
         }
     }
