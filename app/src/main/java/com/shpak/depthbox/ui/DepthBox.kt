@@ -12,9 +12,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.IntSize
 import com.shpak.depthbox.data.model.DepthImage
 import com.shpak.depthbox.ui.shaders.DepthEffectShader
 import com.shpak.depthbox.ui.shaders.struct.Rect
@@ -30,17 +34,22 @@ fun DepthBox(
     val originalBitmap = image.original
     val depthBitmap = image.depth
 
-    var rootCoordinates by remember { mutableStateOf(Rect.Zero) }
+    var viewportSize by remember { mutableStateOf(IntSize.Zero) }
 
     val depthMapShader = RuntimeShader(DepthEffectShader)
 
     Box(
         modifier = modifier
+            .clip(RectangleShape)
             .graphicsLayer {
-                depthMapShader.setRectUniform("rootViewRect", rootCoordinates)
+                depthMapShader.setFloatUniform(
+                    "viewportSize",
+                    viewportSize.width.toFloat(),
+                    viewportSize.height.toFloat()
+                )
 
                 depthMapShader.setFloatUniform(
-                    "originalPictureSize",
+                    "pictureSize",
                     originalBitmap.width.toFloat(),
                     originalBitmap.height.toFloat()
                 )
@@ -69,7 +78,7 @@ fun DepthBox(
                 )
 
                 depthMapShader.setInputBuffer(
-                    "originalPicture",
+                    "picture",
                     BitmapShader(
                         originalBitmap,
                         Shader.TileMode.DECAL,
@@ -81,8 +90,8 @@ fun DepthBox(
                     .createRuntimeShaderEffect(depthMapShader, "inputTexture")
                     .asComposeRenderEffect()
             }
-            .onGloballyPositioned {
-                rootCoordinates = it.toViewRect()
+            .onSizeChanged {
+                viewportSize = it
             }
     ) {
         content()
