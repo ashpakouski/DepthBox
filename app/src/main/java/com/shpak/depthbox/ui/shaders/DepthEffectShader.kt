@@ -18,13 +18,26 @@ val DepthEffectShader = """
     uniform vec2 pictureSize;
     uniform vec2 depthMapSize;
     
-    vec2 translatePixelCoordPortrait(vec2 contentSize, vec2 parentSize, vec2 fragCoord) {
-        float contentCoordMultiplier = contentSize.y / parentSize.y;
-        float contentOffsetX = (contentSize.x - parentSize.x * contentCoordMultiplier) / 2.0;
+    vec2 translatePixelCoordPortrait(vec2 contentSize, vec2 viewSize, vec2 fragCoord) {
+        float viewAspectRatio = viewSize.x / viewSize.y;
+        float contentAspectRatio = contentSize.x / contentSize.y;
+        
+        float contentCoordMultiplierX =  contentSize.y / viewSize.y;
+        float contentOffsetX = (contentSize.x - viewSize.x * contentCoordMultiplierX) / 2.0;
 
         return vec2(
-            fragCoord.x * contentCoordMultiplier + contentOffsetX,
-            fragCoord.y * contentCoordMultiplier
+            fragCoord.x * contentCoordMultiplierX + contentOffsetX,
+            fragCoord.y * contentCoordMultiplierX
+        );
+    }
+    
+    vec2 translatePixelCoordLandscape(vec2 contentSize, vec2 viewSize, vec2 fragCoord) {
+        float contentCoordMultiplierY = contentSize.x / viewSize.x;
+        float contentOffsetY = (contentSize.y - viewSize.y * contentCoordMultiplierY) / 2.0;
+
+        return vec2(
+            fragCoord.x * contentCoordMultiplierY,
+            fragCoord.y * contentCoordMultiplierY + contentOffsetY
         );
     }
 
@@ -33,20 +46,25 @@ val DepthEffectShader = """
 
         float viewportAspectRatio = viewportSize.x / viewportSize.y;
         float pictureAspectRatio = pictureSize.x / pictureSize.y;
+        
+        vec2 pictureCoordTranslated;
+        vec2 depthCoordTranslated;
 
         if (viewportAspectRatio < pictureAspectRatio) {
-            vec4 picturePixel = picture.eval(translatePixelCoordPortrait(pictureSize, viewportSize, fragCoord));
-            vec4 depthPixel = depthMap.eval(translatePixelCoordPortrait(depthMapSize, viewportSize, fragCoord));
-
-            if (depthPixel.x > 0.35 && inputPixel.a != 0.0) {
-                return inputTexture.eval(fragCoord);
-            } else {
-                return picturePixel;
-            }
+            pictureCoordTranslated = translatePixelCoordPortrait(pictureSize, viewportSize, fragCoord);
+            depthCoordTranslated = translatePixelCoordPortrait(depthMapSize, viewportSize, fragCoord);            
         } else {
-        
+            pictureCoordTranslated = translatePixelCoordLandscape(pictureSize, viewportSize, fragCoord);
+            depthCoordTranslated = translatePixelCoordLandscape(depthMapSize, viewportSize, fragCoord);  
         }
-    
-        return vec4(0.0, 1.0, 1.0, 1.0);
+
+        vec4 picturePixel = picture.eval(pictureCoordTranslated);
+        vec4 depthPixel = depthMap.eval(depthCoordTranslated);
+        
+        if (depthPixel.x > 0.65 && inputPixel.a != 0.0) {
+            return inputTexture.eval(fragCoord);
+        } else {
+            return picturePixel;
+        }
     }
 """.trimIndent()
