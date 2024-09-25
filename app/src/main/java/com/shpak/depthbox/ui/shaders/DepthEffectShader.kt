@@ -18,7 +18,11 @@ val DepthEffectShader = """
     uniform vec2 pictureSize;
     uniform vec2 depthMapSize;
     
-    vec2 translatePixelCoord(vec2 contentSize, vec2 viewSize, vec2 fragCoord, bool isPortrait) {
+    vec2 translatePixelCoord(vec2 contentSize, vec2 viewSize, vec2 fragCoord) {
+        float viewportAspectRatio = viewSize.x / viewSize.y;
+        float pictureAspectRatio = contentSize.x / contentSize.y;
+    
+        bool isPortrait = viewportAspectRatio < pictureAspectRatio;
         float coordMultiplier = isPortrait ? (contentSize.y / viewSize.y) : (contentSize.x / viewSize.x);
     
         vec2 offset = isPortrait 
@@ -29,13 +33,8 @@ val DepthEffectShader = """
     }
     
     vec4 main(vec2 fragCoord) {
-        float viewportAspectRatio = viewportSize.x / viewportSize.y;
-        float pictureAspectRatio = pictureSize.x / pictureSize.y;
-    
-        bool isPortrait = viewportAspectRatio < pictureAspectRatio;
-    
-        vec2 pictureCoordTranslated = translatePixelCoord(pictureSize, viewportSize, fragCoord, isPortrait);
-        vec2 depthCoordTranslated = translatePixelCoord(depthMapSize, viewportSize, fragCoord, isPortrait);
+        vec2 pictureCoordTranslated = translatePixelCoord(pictureSize, viewportSize, fragCoord);
+        vec2 depthCoordTranslated = translatePixelCoord(depthMapSize, viewportSize, fragCoord);
     
         vec4 inputPixel = inputTexture.eval(fragCoord);
         vec4 picturePixel = picture.eval(pictureCoordTranslated);
