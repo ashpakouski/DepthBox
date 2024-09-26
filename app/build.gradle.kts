@@ -68,4 +68,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.metadata.extractor)
+
+    implementation(libs.androidx.material.icons.extended)
 }

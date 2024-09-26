@@ -1,4 +1,4 @@
-package com.shpak.depthbox.ui
+package com.shpak.depthbox.ui.component
 
 import android.graphics.BitmapShader
 import android.graphics.RenderEffect
@@ -16,14 +16,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import com.shpak.depthbox.data.model.DepthImage
 import com.shpak.depthbox.ui.shaders.DepthEffectShader
-import com.shpak.depthbox.ui.shaders.struct.Rect
-import com.shpak.depthbox.ui.shaders.struct.setRectUniform
-import com.shpak.depthbox.ui.shaders.struct.toViewRect
 
 @Composable
 fun DepthBox(
