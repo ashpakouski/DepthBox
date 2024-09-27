@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.shpak.depthbox.data.repository.GoogleCameraDepthImageRepository
-import com.shpak.depthbox.data.repository.GoogleCameraXmpDirectoryRepository
+import com.shpak.depthbox.data.repository.depth_image.DefaultDoubleSourceImageRepository
+import com.shpak.depthbox.data.util.toByteArray
 import com.shpak.depthbox.ui.DummyPixelLauncher
 import com.shpak.depthbox.ui.component.DepthBox
 import kotlinx.coroutines.runBlocking
@@ -36,28 +36,36 @@ class MainActivity : ComponentActivity() {
 //            )
 //        }
 
+        val depthImage = runBlocking {
+            DefaultDoubleSourceImageRepository().getDepthImage(
+                originalImageBytes = assets.open("main.png").toByteArray(),
+                depthImageBytes = assets.open("depth.png").toByteArray(),
+                isInverted = false
+            )
+        }
+
         setContent {
-            DummyPixelLauncher()
-//            Box(
-//                modifier = Modifier.fillMaxSize()
-//            ) {
-//                DepthBox(
-//                    image = depthImage,
-//                    modifier = Modifier
-//                        .size(400.dp, 700.dp)
-//                        .fillMaxSize()
-//                        .align(Alignment.Center)
-//                ) {
-//                    Text(
-//                        text = "15\n20",
-//                        color = Color.Yellow,
-//                        fontWeight = FontWeight.Bold,
-//                        fontSize = 191.sp,
-//                        modifier = Modifier
-//                            .align(Alignment.Center)
-//                    )
-//                }
-//            }
+            // DummyPixelLauncher()
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                DepthBox(
+                    image = depthImage,
+                    modifier = Modifier
+                        // .size(400.dp, 700.dp)
+                        .fillMaxSize()
+                        .align(Alignment.Center)
+                ) {
+                    Text(
+                        text = "15\n20",
+                        color = Color.Yellow,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 191.sp,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                    )
+                }
+            }
         }
     }
 

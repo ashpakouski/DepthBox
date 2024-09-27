@@ -1,4 +1,4 @@
-package com.shpak.depthbox.data.repository
+package com.shpak.depthbox.data.repository.xmp_directory
 
 import com.shpak.depthbox.data.model.XmpDirectoryStruct
 

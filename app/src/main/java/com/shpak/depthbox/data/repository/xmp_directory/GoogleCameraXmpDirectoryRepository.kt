@@ -1,4 +1,4 @@
-package com.shpak.depthbox.data.repository
+package com.shpak.depthbox.data.repository.xmp_directory
 
 import com.drew.imaging.ImageMetadataReader
 import com.drew.metadata.xmp.XmpDirectory

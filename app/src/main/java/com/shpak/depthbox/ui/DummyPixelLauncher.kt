@@ -39,7 +39,9 @@ import androidx.compose.ui.unit.sp
 import com.shpak.depthbox.R
 
 val OpenSans = FontFamily(
-    Font(R.font.open_sans_regular, FontWeight.Normal, FontStyle.Normal)
+    Font(R.font.open_sans_regular, FontWeight.Normal, FontStyle.Normal),
+    Font(R.font.open_sans_semi_bold, FontWeight.SemiBold, FontStyle.Normal),
+    Font(R.font.open_sans_bold, FontWeight.Bold, FontStyle.Normal)
 )
 
 @Composable
