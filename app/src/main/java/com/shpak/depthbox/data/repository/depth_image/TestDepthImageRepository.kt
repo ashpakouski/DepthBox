@@ -9,7 +9,7 @@ class TestDepthImageRepository(
 ) : SingleSourceDepthImageRepository {
 
     override suspend fun getDepthImage(fileBytes: ByteArray, isInverted: Boolean): DepthImage = DepthImage(
-        original = BitmapFactory.decodeStream(context.assets.open("test_50_cm.jpg")),
+        main = BitmapFactory.decodeStream(context.assets.open("test_50_cm.jpg")),
         depth = BitmapFactory.decodeStream(context.assets.open("test_50_cm_depth.jpg"))
     )
 }

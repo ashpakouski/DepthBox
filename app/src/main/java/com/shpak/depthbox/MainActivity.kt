@@ -38,34 +38,36 @@ class MainActivity : ComponentActivity() {
 
         val depthImage = runBlocking {
             DefaultDoubleSourceImageRepository().getDepthImage(
-                originalImageBytes = assets.open("main.png").toByteArray(),
-                depthImageBytes = assets.open("depth.png").toByteArray(),
+                originalImageBytes = assets.open("b_main.jpg").toByteArray(),
+                depthImageBytes = assets.open("b_depth.jpg").toByteArray(),
                 isInverted = false
             )
         }
 
         setContent {
-            // DummyPixelLauncher()
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                DepthBox(
-                    image = depthImage,
-                    modifier = Modifier
-                        // .size(400.dp, 700.dp)
-                        .fillMaxSize()
-                        .align(Alignment.Center)
-                ) {
-                    Text(
-                        text = "15\n20",
-                        color = Color.Yellow,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 191.sp,
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                    )
-                }
-            }
+            DummyPixelLauncher(
+                depthImage = depthImage
+            )
+//            Box(
+//                modifier = Modifier.fillMaxSize()
+//            ) {
+//                DepthBox(
+//                    image = depthImage,
+//                    modifier = Modifier
+//                        // .size(400.dp, 700.dp)
+//                        .fillMaxSize()
+//                        .align(Alignment.Center)
+//                ) {
+//                    Text(
+//                        text = "15\n20",
+//                        color = Color.Yellow,
+//                        fontWeight = FontWeight.Bold,
+//                        fontSize = 191.sp,
+//                        modifier = Modifier
+//                            .align(Alignment.Center)
+//                    )
+//                }
+//            }
         }
     }
 

@@ -36,7 +36,7 @@ class GoogleCameraDepthImageRepository(
             } ?: throw Exception("Failed to find depth image")
 
             DepthImage(
-                original = BitmapFactory.decodeByteArray(originalImage, 0, originalImage.size),
+                main = BitmapFactory.decodeByteArray(originalImage, 0, originalImage.size),
                 depth = BitmapFactory.decodeByteArray(depthImage, 0, depthImage.size),
             )
         }
