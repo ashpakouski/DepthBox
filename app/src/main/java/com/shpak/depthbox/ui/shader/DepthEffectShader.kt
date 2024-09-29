@@ -18,13 +18,13 @@ object DepthEffectShader {
     @Language("GLSL")
     private val DepthEffectShader = """
     uniform shader inputTexture;
-    uniform shader picture;
+    uniform shader mainPicture;
     uniform shader depthMap;
     
     uniform float contentDepth;
     
     uniform vec2 viewportSize;
-    uniform vec2 pictureSize;
+    uniform vec2 mainPictureSize;
     uniform vec2 depthMapSize;
     
     vec2 translatePixelCoord(vec2 contentSize, vec2 viewSize, vec2 fragCoord) {
@@ -42,11 +42,11 @@ object DepthEffectShader {
     }
     
     vec4 main(vec2 fragCoord) {
-        vec2 pictureCoordTranslated = translatePixelCoord(pictureSize, viewportSize, fragCoord);
+        vec2 pictureCoordTranslated = translatePixelCoord(mainPictureSize, viewportSize, fragCoord);
         vec2 depthCoordTranslated = translatePixelCoord(depthMapSize, viewportSize, fragCoord);
     
         vec4 inputPixel = inputTexture.eval(fragCoord);
-        vec4 picturePixel = picture.eval(pictureCoordTranslated);
+        vec4 picturePixel = mainPicture.eval(pictureCoordTranslated);
         vec4 depthPixel = depthMap.eval(depthCoordTranslated);
     
         if (depthPixel.x >= contentDepth && inputPixel.a != 0.0) {
@@ -70,7 +70,7 @@ object DepthEffectShader {
             )
 
             setFloatUniform(
-                "pictureSize",
+                "mainPictureSize",
                 bitmapMain.width.toFloat(), bitmapMain.height.toFloat()
             )
 
@@ -87,7 +87,7 @@ object DepthEffectShader {
             )
 
             setInputBuffer(
-                "picture",
+                "mainPicture",
                 BitmapShader(bitmapMain, Shader.TileMode.DECAL, Shader.TileMode.DECAL)
             )
         }
