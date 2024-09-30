@@ -18,6 +18,10 @@ import androidx.compose.ui.unit.IntSize
 import com.shpak.depthbox.data.model.DepthImage
 import com.shpak.depthbox.ui.shader.DepthEffectShader
 
+/**
+ * [DepthBox] doesn't work with empty [content], as there are no pixels to process.
+ */
+
 @Composable
 fun DepthBox(
     image: DepthImage,

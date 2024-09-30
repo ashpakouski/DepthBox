@@ -1,6 +1,7 @@
 package com.shpak.depthbox.data.repository.depth_image
 
 import android.graphics.BitmapFactory
+import android.util.Log
 import com.shpak.depthbox.data.model.DepthImage
 import com.shpak.depthbox.data.model.GoogleCameraXmpDirectoryStruct
 import com.shpak.depthbox.data.repository.xmp_directory.XmpDirectoryRepository
