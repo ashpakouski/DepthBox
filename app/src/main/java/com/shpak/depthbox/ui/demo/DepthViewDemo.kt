@@ -42,7 +42,8 @@ import java.util.Locale
 
 @Composable
 fun DepthViewDemo() {
-    val depthImages = LocalContext.current.getDepthImages()
+    val context = LocalContext.current
+    val depthImages = remember { context.getDepthImages() }
     var selectedImageId by remember { mutableIntStateOf(0) }
 
     var contentDepth by remember { mutableFloatStateOf(0.0f) }

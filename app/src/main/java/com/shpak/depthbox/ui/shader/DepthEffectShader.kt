@@ -11,7 +11,7 @@ import org.intellij.lang.annotations.Language
 object DepthEffectShader {
 
     /**
-     * This string is annotated as "GLSL" just because is allows to use some syntax highlighting
+     * This property is annotated with "GLSL", because is allows to use some syntax highlighting
      * enabled by "GLSL" plugin. Most of GLSL functionality can't be applied to AGSL, so it's
      * up to you to use this lifehack.
      */
@@ -55,7 +55,7 @@ object DepthEffectShader {
             return picturePixel;
         }
     }
-    """.trimIndent()
+    """.trimIndent().let { RuntimeShader(it) }
 
     fun createRenderEffect(
         viewportSize: IntSize,
@@ -63,7 +63,7 @@ object DepthEffectShader {
         bitmapDepth: Bitmap,
         contentDepth: Float,
     ): RenderEffect {
-        val shader = RuntimeShader(DepthEffectShader).apply {
+        val shader = DepthEffectShader.apply {
             setFloatUniform(
                 "viewportSize",
                 viewportSize.width.toFloat(), viewportSize.height.toFloat()
