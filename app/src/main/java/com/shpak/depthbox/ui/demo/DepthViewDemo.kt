@@ -1,9 +1,7 @@
 package com.shpak.depthbox.ui.demo
 
 import android.content.Context
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,13 +40,14 @@ import java.util.Locale
 @Composable
 fun DepthViewDemo() {
     val context = LocalContext.current
-    val depthImages = remember { context.getDepthImages() }
-    var selectedImageId by remember { mutableIntStateOf(0) }
+    val depthImage = remember { context.getDepthImage("bench.jpg") }
 
     var contentDepth by remember { mutableFloatStateOf(0.0f) }
     var innerViewOffset by remember { mutableStateOf(IntOffset.Zero) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -57,7 +55,7 @@ fun DepthViewDemo() {
                 .padding(16.dp)
         ) {
             DepthBox(
-                image = depthImages[selectedImageId],
+                image = depthImage,
                 contentDepth = contentDepth,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -69,16 +67,9 @@ fun DepthViewDemo() {
                             innerViewOffset = IntOffset(position.x.toInt(), position.y.toInt())
                         }
                     }
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        selectedImageId = (selectedImageId + 1) % depthImages.size
-                    }
             ) {
                 Text(
-                    text = "\uD83E\uDD9C",//  Depth ${String.format(Locale.US, "%.2f", contentDepth)}
-//                    text = "\uD83C\uDF34",//  Depth ${String.format(Locale.US, "%.2f", contentDepth)}
+                    text = "🦜",
                     fontSize = 100.sp,
                     color = Color.White,
                     fontWeight = FontWeight.SemiBold,
@@ -120,15 +111,8 @@ private fun DepthController(
     }
 }
 
-// 🌴🐝🦜
-
-private fun Context.getDepthImages(): List<DepthImage> {
-    val imageNames = listOf("vase.jpg", "flowers.jpg", "bench.jpg")
-
-    return runBlocking { // Just for demonstration
+private fun Context.getDepthImage(assetFileName: String): DepthImage =
+    runBlocking { // Just for demonstration
         val repository = GoogleCameraDepthImageRepository(GoogleCameraXmpDirectoryRepository())
-        imageNames.map { imageName ->
-            repository.getDepthImage(assets.open(imageName).toByteArray(), isInverted = false)
-        }
+        repository.getDepthImage(assets.open(assetFileName).toByteArray(), isInverted = false)
     }
-}

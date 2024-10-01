@@ -8,7 +8,7 @@ class DefaultDoubleSourceImageRepository : DoubleSourceDepthImageRepository {
     override suspend fun getDepthImage(
         originalImageBytes: ByteArray, depthImageBytes: ByteArray, isInverted: Boolean
     ): DepthImage = DepthImage(
-        main = originalImageBytes.toBitmap() ?: throw Exception("Couldn't retrieve original bitmap"),
-        depth = depthImageBytes.toBitmap(isInverted) ?: throw Exception("Couldn't retrieve depth bitmap")
+        main = originalImageBytes.toBitmap(),
+        depth = depthImageBytes.toBitmap(isInverted)
     )
 }

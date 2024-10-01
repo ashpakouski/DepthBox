@@ -1,11 +1,11 @@
 package com.shpak.depthbox.data.repository.depth_image
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import com.shpak.depthbox.data.model.DepthImage
 import com.shpak.depthbox.data.model.GoogleCameraXmpDirectoryStruct
 import com.shpak.depthbox.data.repository.xmp_directory.XmpDirectoryRepository
 import com.shpak.depthbox.data.util.JpegExtractor
+import com.shpak.depthbox.data.util.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.math.absoluteValue
@@ -34,14 +34,10 @@ class GoogleCameraDepthImageRepository(
         jpegs: List<ByteArray>,
         xmpDirectories: List<GoogleCameraXmpDirectoryStruct>,
         directorySemantic: String
-    ): Bitmap {
-        val image = xmpDirectories.firstOrNull {
-            it.semantic == directorySemantic
-        }?.length?.let { imageLength ->
-            // There should be a better way, but I still can't find it
-            jpegs.minByOrNull { (it.size - imageLength).absoluteValue }
-        } ?: throw Exception("Failed to find image for: $directorySemantic")
-
-        return BitmapFactory.decodeByteArray(image, 0, image.size)
-    }
+    ): Bitmap = xmpDirectories.firstOrNull {
+        it.semantic == directorySemantic
+    }?.length?.let { imageLength ->
+        // There should be a better way, but I still can't find it
+        jpegs.minByOrNull { (it.size - imageLength).absoluteValue }
+    }?.toBitmap() ?: throw Exception("Failed to find image for: $directorySemantic")
 }

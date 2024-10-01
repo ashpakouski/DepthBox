@@ -4,12 +4,12 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 
-fun ByteArray.toBitmap(shouldInvert: Boolean = false): Bitmap? =
+fun ByteArray.toBitmap(shouldInvert: Boolean = false): Bitmap =
     BitmapFactory.decodeByteArray(this, 0, size).run {
         if (shouldInvert) this.invertColors() else this
     }
 
-fun Bitmap.invertColors(): Bitmap? = copy(Bitmap.Config.ARGB_8888, true)?.apply {
+fun Bitmap.invertColors(): Bitmap = copy(Bitmap.Config.ARGB_8888, true).apply {
     val pixels = IntArray(width * height)
 
     getPixels(pixels, 0, width, 0, 0, width, height)
